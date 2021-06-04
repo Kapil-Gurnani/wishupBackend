@@ -54,17 +54,26 @@ router.get('/subscription/:name?/:date?', function(req, res, next) {
     if(req.params.date) res.status(200).send({plan_id:data[0].plan_id,days_left: data[0].validity - (new Date(req.params.date) - new Date(data[0].start_date))/(1000 * 60 * 60 * 24)});
     else {
       let output = [];
+      // console.log(data);
       for(let i=0 ; i<data.length ; i++){
-        output.push({
-          plan_id:data[0].plan_id,
-          start_date:data[0].start_date,
-          valid_till:new Date(new Date(data[0].start_date).getTime() + data[0].validity*24*60*60*1000).toISOString().split('T')[0]
+        console.log(data[i].validity, data[i].validity !== 'Infinite');
+        if(data[i].validity !== 'Infinite') output.push({
+          plan_id:data[i].plan_id,
+          start_date:data[i].start_date,
+          valid_till:new Date(new Date(data[i].start_date).getTime() + parseInt(data[i].validity)*24*60*60*1000).toISOString().split('T')[0]
+        })
+        else output.push({
+          plan_id:data[i].plan_id,
+          start_date:data[i].start_date,
+          valid_till:"Lifetime"
         })
       }
+      console.log(output);
       res.status(200).send(output);
     }
   }).catch((error)=>{
-    res.sendStatus(500).send(error);
+    console.log(error);
+    // res.sendStatus(500).send(error);
   })
 });
 
