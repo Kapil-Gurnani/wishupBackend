@@ -44,14 +44,24 @@ router.post('/subscription', function(req, res, next) {
   })
 });
 
-router.get('/subscription/:name/:date', function(req, res, next) {
+router.get('/subscription/:name?/:date?', function(req, res, next) {
   // let name = req.params.name;
   console.log(req.params);
   let query = `SELECT p.validity,p.plan_id,u.start_date FROM Users u, Plan p WHERE u.user_name="${req.params.name}" AND p.plan_id=u.plan_id;;`;
 
   executeQuery(query).then((data)=>{
-
-    res.status(200).send({plan_id:data[0].plan_id,days_left: data[0].validity - (new Date(req.params.date) - new Date(data[0].start_date))/(1000 * 60 * 60 * 24)});
+    if(req.params.date) res.status(200).send({plan_id:data[0].plan_id,days_left: data[0].validity - (new Date(req.params.date) - new Date(data[0].start_date))/(1000 * 60 * 60 * 24)});
+    else {
+      let output = [];
+      for(let i=0 ; i<data.length ; i++){
+        output.push({
+          plan_id:data[0].plan_id,
+          start_date:data[0].start_date,
+          valid_till:new Date(new Date(data[0].start_date).getTime() + data[0].validity*24*60*60*1000).toISOString().split('T')[0]
+        })
+      }
+      res.status(200).send(output);
+    }
   }).catch((error)=>{
     res.sendStatus(500).send(error);
   })
