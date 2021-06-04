@@ -6,7 +6,7 @@ const {executeQuery} = require('./../db/db.js');
 /* GET home page. */
 router.put('/user/:name', function(req, res, next) {
   let name = req.params.name;
-  let query = `INSERT INTO Users (user_name, created_at) Values("${name}","${new Date().toISOString().split('T')[0]} ${new Date().toISOString().split('T')[1].split('.')[0]}");`;
+  let query = `INSERT INTO Users (user_name, created_at,plan_id,start_date) Values("${name}","${new Date().toISOString().split('T')[0]} ${new Date().toISOString().split('T')[1].split('.')[0]}","FREE","${new Date().toISOString().split('T')[0]}");`;
 
   executeQuery(query).then((data)=>{
     res.status(200).send();
@@ -29,7 +29,8 @@ router.get('/user/:name', function(req, res, next) {
 
 router.post('/subscription', function(req, res, next) {
   // let name = req.params.name;
-  let query = `UPDATE Users SET plan_id="${req.body.plan_id}", start_date="${req.body.start_date}" WHERE user_name="${req.body.user_name}"`;
+  // let query = `UPDATE Users SET plan_id="${req.body.plan_id}", start_date="${req.body.start_date}" WHERE user_name="${req.body.user_name}"`;
+  let query = `INSERT INTO Users (user_name, created_at,plan_id,start_date) Values("${req.body.user_name}","${new Date().toISOString().split('T')[0]} ${new Date().toISOString().split('T')[1].split('.')[0]}","${req.body.plan_id}","${req.body.start_date}");`;
 
   executeQuery(query).then((data)=>{
     if(data.affectedRows === 1){
