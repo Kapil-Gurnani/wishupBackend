@@ -51,8 +51,20 @@ router.get('/subscription/:name?/:date?', function(req, res, next) {
   let query = `SELECT p.validity,p.plan_id,u.start_date FROM Users u, Plan p WHERE u.user_name="${req.params.name}" AND p.plan_id=u.plan_id;;`;
 
   executeQuery(query).then((data)=>{
-    if(req.params.date) res.status(200).send({plan_id:data[0].plan_id,days_left: data[0].validity - (new Date(req.params.date) - new Date(data[0].start_date))/(1000 * 60 * 60 * 24)});
-    else {
+    if(req.params.date){
+      let index;
+      for(let i=0 ;i<data.length; i++){
+        if(data[i].validity!=='Infinite'){
+          res.status(200).send({plan_id:data[i].plan_id,days_left: data[i].validity - (new Date(req.params.date) - new Date(data[i].start_date))/(1000 * 60 * 60 * 24)});
+          return;
+        }else index=i;
+      }
+      res.status(201).send({
+        plan_id:data[index].plan_id,
+        start_date:data[index].start_date,
+        valid_till:"Lifetime"
+      });
+    }else {
       let output = [];
       // console.log(data);
       for(let i=0 ; i<data.length ; i++){
