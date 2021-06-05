@@ -11,8 +11,7 @@ router.put('/user/:name', function(req, res, next) {
   executeQuery(query).then((data)=>{
     res.status(200).send();
   }).catch((error)=>{
-    console.log(error);
-    // res.sendStatus(500).send(error);
+    res.sendStatus(500).send(error);
   })
 });
 
@@ -40,14 +39,11 @@ router.post('/subscription', function(req, res, next) {
       })
     }else res.status(200).send({status:"FAILURE"});
   }).catch((error)=>{
-    console.log(error);
-    // res.sendStatus(500).send(error);
+    res.sendStatus(500).send(error);
   })
 });
 
 router.get('/subscription/:name?/:date?', function(req, res, next) {
-  // let name = req.params.name;
-  console.log(req.params);
   let query = `SELECT p.validity,p.plan_id,u.start_date FROM Users u, Plan p WHERE u.user_name="${req.params.name}" AND p.plan_id=u.plan_id;;`;
 
   executeQuery(query).then((data)=>{
@@ -66,9 +62,7 @@ router.get('/subscription/:name?/:date?', function(req, res, next) {
       });
     }else {
       let output = [];
-      // console.log(data);
       for(let i=0 ; i<data.length ; i++){
-        console.log(data[i].validity, data[i].validity !== 'Infinite');
         if(data[i].validity !== 'Infinite') output.push({
           plan_id:data[i].plan_id,
           start_date:data[i].start_date,
@@ -80,12 +74,10 @@ router.get('/subscription/:name?/:date?', function(req, res, next) {
           valid_till:"Lifetime"
         })
       }
-      console.log(output);
       res.status(200).send(output);
     }
   }).catch((error)=>{
-    console.log(error);
-    // res.sendStatus(500).send(error);
+    res.sendStatus(500).send(error);
   })
 });
 
